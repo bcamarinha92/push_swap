@@ -75,17 +75,27 @@ t_node* ft_rever_rotate(t_node* list)
     return list;
 }
 
-t_node* move_node(t_node* stack_src, t_node* stack_dst) 
-{
-    t_node* element;
+// t_node* ft_move_node(t_node* stack_src, t_node* stack_dst) 
+// {
+//     t_node* element;
     
-    if (stack_src == NULL) 
-        return stack_dst;
-    element = stack_src;
-    stack_src = stack_src->next;
-    element->next = stack_dst;
-    stack_dst = element;
-    return stack_dst;
+//     if (stack_src == NULL) 
+//         return stack_dst;
+//     element = stack_src;
+//     stack_src = stack_src->next;
+//     element->next = stack_dst;
+//     stack_dst = element;
+//     return stack_dst;
+// }
+
+void ft_move_node(t_node **stack_src, t_node **stack_dst) 
+{
+    if (*stack_src == NULL) 
+        return;
+    t_node *element = *stack_src;
+    *stack_src = (*stack_src)->next;
+    element->next = *stack_dst;
+    *stack_dst = element;
 }
 
 int ft_find_max(t_node* head) 
@@ -132,50 +142,174 @@ int ft_is_sorted(t_node* head)
     return 1;
 }
 
-void	ft_small_sort(t_node *stack)
+void	ft_three_sort(t_node **stack)
 {
 	int	maximum;
 	int	minimum;
 
-	maximum = ft_find_max(stack);
-	minimum = ft_find_min(stack);
-	while (!ft_is_sorted(stack))
+	maximum = ft_find_max(*stack);
+	minimum = ft_find_min(*stack);
+	while (!ft_is_sorted(*stack))
 	{
-		if (stack->data != minimum && stack->next->data == maximum)
+		if ((*stack)->data != minimum && (*stack)->next->data == maximum)
         {
-			ft_rever_rotate(stack);
+			ft_rever_rotate(*stack);
             printf("rra\n");
         }
-		else if (stack->data == maximum && stack->next->data == minimum)
+		else if ((*stack)->data == maximum && (*stack)->next->data == minimum)
         {
-			ft_rotate_node(stack);
+			ft_rotate_node(*stack);
             printf("ra\n");
         }
 		else
         {
-			ft_swap_node(stack);
+			ft_swap_node(*stack);
             printf("sa\n");
         }
 	}
 }
 
-int main(int argc, char *argv[]) {
-    t_node* list = NULL;
+// void	ft_three_sort(t_node *stack)
+// {
+// 	int	maximum;
+// 	int	minimum;
 
-    for (int i = 1; i < argc; i++) {
-        int val = atoi(argv[i]);
-        list = ft_add_to_list(list, val);
+// 	maximum = ft_find_max(stack);
+// 	minimum = ft_find_min(stack);
+// 	while (!ft_is_sorted(stack))
+// 	{
+// 		if (stack->data != minimum && stack->next->data == maximum)
+//         {
+// 			ft_rever_rotate(stack);
+//             printf("rra\n");
+//         }
+// 		else if (stack->data == maximum && stack->next->data == minimum)
+//         {
+// 			ft_rotate_node(stack);
+//             printf("ra\n");
+//         }
+// 		else
+//         {
+// 			ft_swap_node(stack);
+//             printf("sa\n");
+//         }
+// 	}
+// }
+
+int ft_print_list(t_node *stack) 
+{
+    t_node *current;
+    current = stack;
+    while (current != NULL) 
+    {
+        printf("%d ", current->data);
+        current = current->next;
     }
+    printf("\n");
+    return(0);
+}
 
-    //list = ft_swap_node(list);
-    //list = ft_rever_rotate(list);
-    ft_small_sort(list);
-    // Print the linked list
-    // t_node* current_node = list;
-    // while (current_node != NULL) {
-    //     printf("%d ", current_node->data);
-    //     current_node = current_node->next;
-    // }
+int ft_stack_length(t_node *stack) 
+{
+    int i;
 
+    i = 0;
+    while (stack != NULL) 
+    {
+        i++;
+        stack = stack->next;
+    }
+    return i;
+}
+
+// void	ft_five_sort(t_node **stack, t_node **stack2)
+// {
+// 	while (ft_stack_length((*stack)) > 3)
+// 	{
+//         printf("primeiro nod entrada -> %d", *stack);
+//         printf("stack len --> %d\n", ft_stack_length((*stack)));
+// 		if ((*stack)->data == ft_find_min((*stack)))
+//         {
+// 			ft_move_node((*stack), (*stack2));
+//             printf("pb\n");
+//         }
+// 		else
+//         {
+// 			ft_rotate_node((*stack));
+//             printf("ra\n");
+//         }
+//         //ft_print_list((*stack));
+//         printf("primeiro nod saida -> %d", *stack);
+// 	}
+//     ft_three_sort((*stack));
+//     ft_three_sort((*stack2));
+//     while (ft_stack_length((*stack)))
+//     {
+//         ft_move_node((*stack2), (*stack));
+//         printf("pa\n");
+//     }
+// }
+
+void	ft_five_sort(t_node *stack, t_node *stack2)
+{
+	while (ft_stack_length(stack) > 3)
+	{
+		if (stack->data == ft_find_min(stack))
+        {
+			ft_move_node(&stack, &stack2);
+            printf("pb\n");
+        }
+		else
+        {
+			ft_rotate_node(stack);
+            printf("ra\n");
+        }
+	}
+    ft_three_sort(&stack);
+    ft_print_list(stack2);
+    ft_three_sort(&stack2);
+    ft_print_list(stack2);
+    while (ft_stack_length(stack2))
+    {
+        ft_move_node(&stack2, &stack);
+        printf("pa\n");
+    }
+    ft_print_list(stack);
+}
+
+
+
+
+
+
+int main(int argc, char *argv[]) {
+
+    t_node *list;
+    t_node *list2;
+    int i;
+    int val; 
+    i = 1;
+    if (argc > 1)
+    {
+        list = NULL;
+        list2 = NULL;
+
+        while (i < argc)
+        {
+            val = atoi(argv[i]);
+            list = ft_add_to_list(list, val);
+            i++;
+        }
+
+        //list = ft_swap_node(list);
+        //list = ft_rever_rotate(list);
+        ft_five_sort(list,list2);
+        // Print the linked list
+        // t_node* current_node = list;
+        // while (current_node != NULL) {
+        //     printf("%d ", current_node->data);
+        //     current_node = current_node->next;
+        // }
+    }
     return 0;
 }
