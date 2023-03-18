@@ -28,65 +28,52 @@ t_node* ft_add_to_list(t_node* list, int val)
     return list;
 }
 
-t_node* ft_swap_node(t_node* list) 
+t_node* ft_swap_node(t_node** list) 
 {
     int temp ;
 
-    if (list == NULL || list->next == NULL) 
-        return list; 
-    temp = list->data;
-    list->data = list->next->data;
-    list->next->data = temp;
-    return list;
+    if ((*list) == NULL || (*list)->next == NULL) 
+        return (*list); 
+    temp = (*list)->data;
+    (*list)->data = (*list)->next->data;
+    (*list)->next->data = temp;
+    return (*list);
 }
 
-t_node* ft_rotate_node(t_node* list) 
+void ft_rotate_node(t_node **stack)
 {
-    t_node* current_node;
-
-    if (list == NULL || list->next == NULL) 
-        return list;
-    current_node = list;
-    while (current_node->next != NULL) 
-        current_node = current_node->next;
-    current_node->next = list;
-    list = list->next;
-    current_node->next->next = NULL;
-    return list;
+    t_node *tmp;
+    t_node *first;
+    
+    if (*stack == NULL || (*stack)->next == NULL)
+        return;
+    tmp = *stack;
+    first = *stack;
+    while (tmp->next)
+        tmp = tmp->next;
+    *stack = (*stack)->next;
+    first->next = NULL;
+    tmp->next = first;
 }
 
-t_node* ft_rever_rotate(t_node* list) 
+void ft_rever_rotate(t_node **list)
 {
-    t_node* current_node = list;
-    t_node* previous_node = NULL;
+    t_node *current_node = *list;
+    t_node *previous_node = NULL;
 
-    if (list == NULL || list->next == NULL)
-        return list;
-    current_node = list;
+    if (*list == NULL || (*list)->next == NULL)
+        return;
+    current_node = *list;
     previous_node = NULL;
-    while (current_node->next != NULL) 
+    while (current_node->next != NULL)
     {
         previous_node = current_node;
         current_node = current_node->next;
     }
-    current_node->next = list;
-    list = current_node;
+    current_node->next = *list;
+    *list = current_node;
     previous_node->next = NULL;
-    return list;
 }
-
-// t_node* ft_move_node(t_node* stack_src, t_node* stack_dst) 
-// {
-//     t_node* element;
-    
-//     if (stack_src == NULL) 
-//         return stack_dst;
-//     element = stack_src;
-//     stack_src = stack_src->next;
-//     element->next = stack_dst;
-//     stack_dst = element;
-//     return stack_dst;
-// }
 
 void ft_move_node(t_node **stack_src, t_node **stack_dst) 
 {
@@ -153,48 +140,22 @@ void	ft_three_sort(t_node **stack)
 	{
 		if ((*stack)->data != minimum && (*stack)->next->data == maximum)
         {
-			ft_rever_rotate(*stack);
+			ft_rever_rotate(stack);
             printf("rra\n");
         }
 		else if ((*stack)->data == maximum && (*stack)->next->data == minimum)
         {
-			ft_rotate_node(*stack);
+			ft_rotate_node(stack);
             printf("ra\n");
         }
 		else
         {
-			ft_swap_node(*stack);
+			ft_swap_node(stack);
             printf("sa\n");
         }
+        
 	}
 }
-
-// void	ft_three_sort(t_node *stack)
-// {
-// 	int	maximum;
-// 	int	minimum;
-
-// 	maximum = ft_find_max(stack);
-// 	minimum = ft_find_min(stack);
-// 	while (!ft_is_sorted(stack))
-// 	{
-// 		if (stack->data != minimum && stack->next->data == maximum)
-//         {
-// 			ft_rever_rotate(stack);
-//             printf("rra\n");
-//         }
-// 		else if (stack->data == maximum && stack->next->data == minimum)
-//         {
-// 			ft_rotate_node(stack);
-//             printf("ra\n");
-//         }
-// 		else
-//         {
-// 			ft_swap_node(stack);
-//             printf("sa\n");
-//         }
-// 	}
-// }
 
 int ft_print_list(t_node *stack) 
 {
@@ -222,70 +183,42 @@ int ft_stack_length(t_node *stack)
     return i;
 }
 
-// void	ft_five_sort(t_node **stack, t_node **stack2)
-// {
-// 	while (ft_stack_length((*stack)) > 3)
-// 	{
-//         printf("primeiro nod entrada -> %d", *stack);
-//         printf("stack len --> %d\n", ft_stack_length((*stack)));
-// 		if ((*stack)->data == ft_find_min((*stack)))
-//         {
-// 			ft_move_node((*stack), (*stack2));
-//             printf("pb\n");
-//         }
-// 		else
-//         {
-// 			ft_rotate_node((*stack));
-//             printf("ra\n");
-//         }
-//         //ft_print_list((*stack));
-//         printf("primeiro nod saida -> %d", *stack);
-// 	}
-//     ft_three_sort((*stack));
-//     ft_three_sort((*stack2));
-//     while (ft_stack_length((*stack)))
-//     {
-//         ft_move_node((*stack2), (*stack));
-//         printf("pa\n");
-//     }
-// }
-
-void	ft_five_sort(t_node *stack, t_node *stack2)
+void	ft_five_sort(t_node **stack, t_node **stack2)
 {
-	while (ft_stack_length(stack) > 3)
+	while (ft_stack_length(*stack) > 3)
 	{
-		if (stack->data == ft_find_min(stack))
+		if ((*stack)->data == ft_find_min(*stack))
         {
-			ft_move_node(&stack, &stack2);
+			ft_move_node(stack, stack2);
             printf("pb\n");
         }
 		else
         {
-			ft_rotate_node(stack);
-            printf("ra\n");
+            if ((*stack)->next->data == ft_find_min(*stack))
+            {
+			    ft_rotate_node(stack);
+                printf("ra\n");
+            }
+            else
+            {
+                ft_rever_rotate(stack);
+                printf("rra\n");
+            }
         }
 	}
-    ft_three_sort(&stack);
-    ft_print_list(stack2);
-    ft_three_sort(&stack2);
-    ft_print_list(stack2);
-    while (ft_stack_length(stack2))
+    ft_three_sort(stack);
+    while (ft_stack_length(*stack2))
     {
-        ft_move_node(&stack2, &stack);
+        ft_move_node(stack2, stack);
         printf("pa\n");
     }
-    ft_print_list(stack);
 }
 
-
-
-
-
-
-int main(int argc, char *argv[]) {
-
+int main(int argc, char **argv) 
+{
     t_node *list;
     t_node *list2;
+
     int i;
     int val; 
     i = 1;
@@ -300,16 +233,13 @@ int main(int argc, char *argv[]) {
             list = ft_add_to_list(list, val);
             i++;
         }
-
-        //list = ft_swap_node(list);
-        //list = ft_rever_rotate(list);
-        ft_five_sort(list,list2);
-        // Print the linked list
-        // t_node* current_node = list;
-        // while (current_node != NULL) {
-        //     printf("%d ", current_node->data);
-        //     current_node = current_node->next;
-        // }
+        if (!ft_is_sorted(list))
+        {
+            if (argc - 1 < 4)
+                ft_three_sort(&list);
+            else if (argc -1 < 6)
+                ft_five_sort(&list,&list2);
+        }
     }
     return 0;
 }
