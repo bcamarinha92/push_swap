@@ -1,7 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-typedef struct s_node {
+typedef struct s_node 
+{
     int data;
     struct s_node* next;
 } t_node;
@@ -18,11 +19,21 @@ t_node* ft_add_to_list(t_node* list, int val)
     if (list == NULL) 
     {
         list = new_node;
-    } else 
+    } 
+    else 
     {
         current_node = list;
-        while (current_node->next != NULL) 
+        while (current_node != NULL) 
+        {
+            if (current_node->data == val)
+            {
+                printf("Error\n");
+                exit(1);
+            }
+            if (current_node->next == NULL)
+                break ;
             current_node = current_node->next;
+        }
         current_node->next = new_node;
     }
     return list;
