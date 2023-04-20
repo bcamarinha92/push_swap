@@ -1,13 +1,57 @@
-#include <stdlib.h>
-#include <stdio.h>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   push_swap.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bde-sous <bde-sous@student.42porto.com>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/04/20 18:40:18 by bde-sous          #+#    #+#             */
+/*   Updated: 2023/04/20 21:38:36 by bde-sous         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-typedef struct s_node 
+#include "push_swap.h"
+
+void freestack(t_node *stack) 
 {
-    int data;
-    struct s_node* next;
-} t_node;
+    t_node *aux;
 
-t_node* ft_add_to_list(t_node* list, int val) 
+    while (stack != NULL) 
+    {
+        aux = stack;
+        stack = stack->next;
+        free(aux);
+    }
+}
+
+void ft_virtual_sort(t_node **list, int ac)
+{
+    t_node* current_node;
+    t_node* first_node;
+    t_node* compare_node;
+    int i;
+
+    first_node = *list;
+    current_node = first_node;
+    while (current_node) 
+    {
+        i = 0;
+        compare_node = first_node;
+        while (compare_node != NULL) 
+        {
+            if (current_node->data < compare_node->data)
+                i++;
+            if (compare_node->next == NULL)
+                break ;
+            compare_node = compare_node->next;
+        }
+        current_node->pos = ac - i;
+        current_node = current_node->next;
+    }
+
+}
+
+t_node* ft_add_to_list(t_node *list, int val) 
 {
     t_node* new_node;
     t_node* current_node;
@@ -17,9 +61,7 @@ t_node* ft_add_to_list(t_node* list, int val)
     new_node->next = NULL;
 
     if (list == NULL) 
-    {
         list = new_node;
-    } 
     else 
     {
         current_node = list;
@@ -27,7 +69,9 @@ t_node* ft_add_to_list(t_node* list, int val)
         {
             if (current_node->data == val)
             {
-                printf("Error\n");
+                freestack(list);
+                free(new_node);
+                ft_putstr_fd("Error\n",1);
                 exit(1);
             }
             if (current_node->next == NULL)
@@ -37,192 +81,6 @@ t_node* ft_add_to_list(t_node* list, int val)
         current_node->next = new_node;
     }
     return list;
-}
-
-t_node* ft_swap_node(t_node** list) 
-{
-    int temp ;
-
-    if ((*list) == NULL || (*list)->next == NULL) 
-        return (*list); 
-    temp = (*list)->data;
-    (*list)->data = (*list)->next->data;
-    (*list)->next->data = temp;
-    return (*list);
-}
-
-void ft_rotate_node(t_node **stack)
-{
-    t_node *tmp;
-    t_node *first;
-    
-    if (*stack == NULL || (*stack)->next == NULL)
-        return;
-    tmp = *stack;
-    first = *stack;
-    while (tmp->next)
-        tmp = tmp->next;
-    *stack = (*stack)->next;
-    first->next = NULL;
-    tmp->next = first;
-}
-
-void ft_rever_rotate(t_node **list)
-{
-    t_node *current_node = *list;
-    t_node *previous_node = NULL;
-
-    if (*list == NULL || (*list)->next == NULL)
-        return;
-    current_node = *list;
-    previous_node = NULL;
-    while (current_node->next != NULL)
-    {
-        previous_node = current_node;
-        current_node = current_node->next;
-    }
-    current_node->next = *list;
-    *list = current_node;
-    previous_node->next = NULL;
-}
-
-void ft_move_node(t_node **stack_src, t_node **stack_dst) 
-{
-    if (*stack_src == NULL) 
-        return;
-    t_node *element = *stack_src;
-    *stack_src = (*stack_src)->next;
-    element->next = *stack_dst;
-    *stack_dst = element;
-}
-
-int ft_find_max(t_node* head) 
-{
-    int max;
-    t_node* current;
-
-    max = head->data;
-    current = head->next;
-    while (current != NULL) {
-        if (current->data > max)
-            max = current->data;
-        current = current->next;
-    }
-    return max;
-}
-
-int ft_find_min(t_node* head) 
-{
-    int min;
-    t_node* current;
-
-    min = head->data;
-    current = head->next;
-    while (current != NULL) {
-        if (current->data < min)
-            min = current->data;
-        current = current->next;
-    }
-    return min;
-}
-
-int ft_is_sorted(t_node* head) 
-{
-    t_node* current;
-
-    current = head;
-    while (current != NULL && current->next != NULL) 
-    {
-        if (current->data > current->next->data)
-            return 0;
-        current = current->next;
-    }
-    return 1;
-}
-
-void	ft_three_sort(t_node **stack)
-{
-	int	maximum;
-	int	minimum;
-
-	maximum = ft_find_max(*stack);
-	minimum = ft_find_min(*stack);
-	while (!ft_is_sorted(*stack))
-	{
-		if ((*stack)->data != minimum && (*stack)->next->data == maximum)
-        {
-			ft_rever_rotate(stack);
-            printf("rra\n");
-        }
-		else if ((*stack)->data == maximum && (*stack)->next->data == minimum)
-        {
-			ft_rotate_node(stack);
-            printf("ra\n");
-        }
-		else
-        {
-			ft_swap_node(stack);
-            printf("sa\n");
-        }
-        
-	}
-}
-
-int ft_print_list(t_node *stack) 
-{
-    t_node *current;
-    current = stack;
-    while (current != NULL) 
-    {
-        printf("%d ", current->data);
-        current = current->next;
-    }
-    printf("\n");
-    return(0);
-}
-
-int ft_stack_length(t_node *stack) 
-{
-    int i;
-
-    i = 0;
-    while (stack != NULL) 
-    {
-        i++;
-        stack = stack->next;
-    }
-    return i;
-}
-
-void	ft_five_sort(t_node **stack, t_node **stack2)
-{
-	while (ft_stack_length(*stack) > 3)
-	{
-		if ((*stack)->data == ft_find_min(*stack))
-        {
-			ft_move_node(stack, stack2);
-            printf("pb\n");
-        }
-		else
-        {
-            if ((*stack)->next->data == ft_find_min(*stack))
-            {
-			    ft_rotate_node(stack);
-                printf("ra\n");
-            }
-            else
-            {
-                ft_rever_rotate(stack);
-                printf("rra\n");
-            }
-        }
-	}
-    ft_three_sort(stack);
-    while (ft_stack_length(*stack2))
-    {
-        ft_move_node(stack2, stack);
-        printf("pa\n");
-    }
 }
 
 int main(int argc, char **argv) 
@@ -240,17 +98,40 @@ int main(int argc, char **argv)
 
         while (i < argc)
         {
-            val = atoi(argv[i]);
-            list = ft_add_to_list(list, val);
+            val = ft_atoi(argv[i]);
+            if ((val == 0) && (argv[i][0]=='0'))
+                list = ft_add_to_list(list, val);
+            else
+            {
+                ft_putstr_fd("Error\n",1);
+                exit(1);
+            }
             i++;
         }
+        ft_virtual_sort(&list,argc - 1);
         if (!ft_is_sorted(list))
         {
             if (argc - 1 < 4)
                 ft_three_sort(&list);
             else if (argc -1 < 6)
                 ft_five_sort(&list,&list2);
+            else
+                ft_radix_sort(&list,&list2, ft_nbrlen(ft_find_max(list),2),0);
         }
+        freestack(list);
     }
     return 0;
 }
+
+// int ft_print_list(t_node *stack) 
+// {
+//     t_node *current;
+//     current = stack;
+//     while (current != NULL) 
+//     {
+//         printf("valor: %d | pos virtual: %d \n", current->data,current->pos);
+//         current = current->next;
+//     }
+//     printf("\n");
+//     return(0);
+// }
