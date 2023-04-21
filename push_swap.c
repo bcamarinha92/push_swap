@@ -6,7 +6,7 @@
 /*   By: bde-sous <bde-sous@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/20 18:40:18 by bde-sous          #+#    #+#             */
-/*   Updated: 2023/04/20 21:38:36 by bde-sous         ###   ########.fr       */
+/*   Updated: 2023/04/21 19:42:36 by bde-sous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,22 @@ void freestack(t_node *stack)
     }
 }
 
+int ft_isint(const char *str)
+{
+    int i;
+
+    i = 0;
+    while (str[i] >= '0' && str[i] <='9')
+    {
+        i++;
+    }
+    if (str[i] != '\0')
+        return(0);
+    if (ft_atoll(str) > INT_MAX || ft_atoll(str) < INT_MIN)
+        return(0);
+    return(1); 
+
+}
 void ft_virtual_sort(t_node **list, int ac)
 {
     t_node* current_node;
@@ -91,6 +107,7 @@ int main(int argc, char **argv)
     int i;
     int val; 
     i = 1;
+    
     if (argc > 1)
     {
         list = NULL;
@@ -98,9 +115,11 @@ int main(int argc, char **argv)
 
         while (i < argc)
         {
-            val = ft_atoi(argv[i]);
-            if ((val == 0) && (argv[i][0]=='0'))
+            if (ft_isint(argv[i]))
+            {
+                val = ft_atoi(argv[i]);
                 list = ft_add_to_list(list, val);
+            }
             else
             {
                 ft_putstr_fd("Error\n",1);

@@ -6,7 +6,7 @@
 /*   By: bde-sous <bde-sous@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/20 18:40:12 by bde-sous          #+#    #+#             */
-/*   Updated: 2023/04/20 21:06:37 by bde-sous         ###   ########.fr       */
+/*   Updated: 2023/04/21 19:32:01 by bde-sous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <stdlib.h>
 # include <stdio.h>
 # include <unistd.h>
+# include <limits.h>
 # include "./libft/libft.h"
 
 typedef struct s_node 
@@ -39,6 +40,7 @@ int		ft_find_min(t_node* head);
 int		ft_is_sorted(t_node* head);
 int		ft_stack_length(t_node *stack);
 int		ft_nbrlen(long n, int base);
+int     ft_isint(const char *str);
 t_node*	ft_add_to_list(t_node* list, int val);
 
 #endif
